@@ -30,6 +30,20 @@ Settings now live in a single modal with tabs:
 - Integrations: webhooks and MQTT.
 - Diagnostics: live detection info and recent logs.
 
+## Build & run (packaged app)
+
+```bash
+cd signal
+npm install
+npm run build
+```
+
+Build artifacts are placed in `apps/desktop/release`. Run the output for your OS, for example:
+
+- macOS: `apps/desktop/release/mac-*/Signal.app`
+- Windows: `apps/desktop/release/*.exe`
+- Linux: `apps/desktop/release/*.AppImage`
+
 ### Corporate SSL / self-signed certs
 
 If Govee requests fail with `self signed certificate`, enable “Allow insecure TLS” in the Govee settings (not recommended).
