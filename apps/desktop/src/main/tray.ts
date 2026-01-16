@@ -19,7 +19,7 @@ export function createTray({
   onOpenSettings,
   onQuit
 }: TrayDeps) {
-  const iconPath = resolveAssetPath('icon-dots-template.png');
+  const iconPath = resolveAssetPath('icon-dots-tray.png');
   let trayIcon = nativeImage.createFromPath(iconPath);
   if (trayIcon.isEmpty() && fs.existsSync(iconPath)) {
     try {
@@ -34,7 +34,7 @@ export function createTray({
   }
   if (process.platform === 'darwin') {
     trayIcon = trayIcon.resize({ width: 18, height: 18 });
-    trayIcon.setTemplateImage(true);
+    trayIcon.setTemplateImage(false);
   }
   const tray = new Tray(trayIcon);
 
