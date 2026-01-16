@@ -345,9 +345,9 @@ export default function App() {
         <section className="rounded-3xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900 shadow-sm">
           <p className="font-semibold">Enable window access to improve detection.</p>
           <p className="mt-1 text-amber-800">
-            macOS: System Settings → Privacy & Security → Accessibility → enable Signal (and
-            Terminal when running dev). Windows: allow apps to access window titles and run Signal
-            once with admin rights if needed.
+            macOS: System Settings → Privacy & Security → Screen Recording (and Accessibility if
+            prompted) → enable Signal (and Terminal when running dev). Windows: allow apps to access
+            window titles and run Signal once with admin rights if needed.
           </p>
         </section>
       ) : null}
@@ -479,9 +479,9 @@ export default function App() {
                   <section className="rounded-3xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900 shadow-sm">
                     <p className="font-semibold">Enable window access to improve detection.</p>
                     <p className="mt-1 text-amber-800">
-                      macOS: System Settings → Privacy & Security → Accessibility → enable Signal (and Terminal when
-                      running dev). Windows: allow apps to access window titles and run Signal once with admin rights if
-                      needed.
+                      macOS: System Settings → Privacy & Security → Screen Recording (and Accessibility if prompted) →
+                      enable Signal (and Terminal when running dev). Windows: allow apps to access window titles and run
+                      Signal once with admin rights if needed.
                     </p>
                   </section>
                 ) : null}

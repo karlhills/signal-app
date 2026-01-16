@@ -1,6 +1,9 @@
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
+import { promisify } from 'node:util';
+import childProcess from 'node:child_process';
+import { app } from 'electron';
 import type { MeetingDiagnostics } from './types.js';
 import type { Logger } from '../utils/log.js';
 
@@ -68,22 +71,10 @@ export class MeetingDetector {
     let activeOwner = '';
     let activeWinAvailable = true;
 
-    const activeWinModuleId = this.getActiveWinModuleId();
-    const [{ default: psList }, activeWinModule] = await Promise.all([
+    const [{ default: psList }, activeWin] = await Promise.all([
       import('ps-list'),
-      import(activeWinModuleId).catch((error) => {
-        this.logger.warn('Active-win import failed', {
-          error: String(error),
-          module: activeWinModuleId
-        });
-        return undefined;
-      })
+      this.getActiveWinFunction()
     ]);
-    const activeWin = activeWinModule
-      ? (activeWinModule as unknown as { activeWindow?: () => Promise<any> }).activeWindow ??
-        (activeWinModule as unknown as { default?: () => Promise<any> }).default ??
-        (activeWinModule as unknown as () => Promise<any>)
-      : undefined;
 
     const processes = await psList();
     const lowerProcessNames = processes.map((proc) => proc.name.toLowerCase());
@@ -169,6 +160,47 @@ export class MeetingDetector {
     onUpdate(this.getDiagnostics());
   }
 
+  private async getActiveWinFunction() {
+    if (process.platform === 'darwin' && this.isPackaged()) {
+      const binaryPath = path.join(
+        process.resourcesPath,
+        'app.asar.unpacked',
+        'node_modules',
+        'active-win',
+        'main'
+      );
+      const execFile = promisify(childProcess.execFile);
+      return async () => {
+        const { stdout } = await execFile(binaryPath, ['--no-accessibility-permission']);
+        return this.parseActiveWin(stdout);
+      };
+    }
+
+    const activeWinModuleId = this.getActiveWinModuleId();
+    const activeWinModule = await import(activeWinModuleId).catch((error) => {
+      this.logger.warn('Active-win import failed', {
+        error: String(error),
+        module: activeWinModuleId
+      });
+      return undefined;
+    });
+
+    if (!activeWinModule) {
+      return undefined;
+    }
+
+    const activeWin =
+      (activeWinModule as unknown as { activeWindow?: (options?: any) => Promise<any> }).activeWindow ??
+      (activeWinModule as unknown as { default?: (options?: any) => Promise<any> }).default ??
+      (activeWinModule as unknown as (options?: any) => Promise<any>);
+
+    if (process.platform === 'darwin') {
+      return () => activeWin({ accessibilityPermission: false });
+    }
+
+    return activeWin;
+  }
+
   private getActiveWinModuleId() {
     const require = createRequire(import.meta.url);
     const entryPath = require.resolve('active-win');
@@ -187,6 +219,23 @@ export class MeetingDetector {
       return windowsModule;
     }
     return 'active-win';
+  }
+
+  private parseActiveWin(stdout: string) {
+    try {
+      return JSON.parse(stdout);
+    } catch (error) {
+      this.logger.warn('Active window parse failed', { error: String(error) });
+      throw new Error('Error parsing window data');
+    }
+  }
+
+  private isPackaged() {
+    try {
+      return app.isPackaged;
+    } catch {
+      return false;
+    }
   }
 
   private formatActiveWinError(error: unknown) {

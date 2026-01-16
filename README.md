@@ -130,6 +130,16 @@ If your network uses a proxy or custom CA, enable “Allow insecure TLS” in Se
 `active-win` needs window title access. On macOS, grant **Screen Recording** and **Accessibility**
 to Terminal (for dev) and `node_modules/electron/dist/Electron.app`, then restart Signal.
 
+For packaged builds on macOS, Screen Recording must be granted to the installed `Signal.app`.
+The build step re-signs the helper automatically, but if the helper keeps prompting or reports
+missing permission, re-sign the helper and app (ad-hoc is OK):
+
+```bash
+codesign --force --sign - --identifier com.signal.app /Applications/Signal.app/Contents/Resources/app.asar.unpacked/node_modules/active-win/main
+codesign --force --deep --sign - /Applications/Signal.app
+tccutil reset ScreenCapture com.signal.app
+```
+
 ### Tray behavior
 
 - Signal keeps running when the window closes; use the tray menu to quit.

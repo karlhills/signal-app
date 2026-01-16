@@ -57,7 +57,11 @@
     },
     "files": [
       "dist/main/**/*",
-      "dist/renderer/**/*"
+      "dist/renderer/**/*",
+      "node_modules/active-win/**"
+    ],
+    "asarUnpack": [
+      "node_modules/active-win/**"
     ],
     "extraResources": [
       {
@@ -76,6 +80,7 @@
     "linux": {
       "target": "AppImage",
       "icon": "../../assets/icon.png"
-    }
+    },
+    "afterSign": "scripts/afterSign.cjs"
   }
 }

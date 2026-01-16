@@ -39,6 +39,7 @@ export default function Diagnostics({ diagnostics }: DiagnosticsProps) {
                 diagnostics.logs.map((entry, index) => (
                   <p key={`${entry.at}-${index}`}>
                     [{formatTime(entry.at)}] {entry.level.toUpperCase()}: {entry.message}
+                    {entry.meta ? ` ${JSON.stringify(entry.meta)}` : ''}
                   </p>
                 ))
               )}

@@ -48,7 +48,7 @@ export interface Config {
 
 export interface DiagnosticsResponse {
   ok: boolean;
-  logs: { level: string; message: string; at: number }[];
+  logs: { level: string; message: string; at: number; meta?: Record<string, unknown> }[];
   govee: { ok: boolean; message: string; at: number } | null;
   goveeDevices?: { ok: boolean; message: string; at: number; raw?: unknown } | null;
   webhook?: { ok: boolean; message: string; at: number } | null;
